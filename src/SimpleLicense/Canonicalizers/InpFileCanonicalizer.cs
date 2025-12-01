@@ -1,3 +1,7 @@
+/// <summary>
+/// Canonicalizer for EPANET .inp files
+/// </summary>
+
 using System.Text.RegularExpressions;
 using SimpleLicense.Core;
 
