@@ -38,18 +38,18 @@ namespace SimpleLicense.Canonicalizers
         private static readonly string[] FullLineCommentMarkers =
             { "#", ";", "//" };
 
-        public IEnumerable<string> SupportedExtensions { get; }
+        private readonly HashSet<string> _supportedExtensions;
+        public IEnumerable<string> SupportedExtensions => _supportedExtensions;
 
-        /// <summary>
-        /// Construct a TextFileCanonicalizer that handles a set of extensions.
-        /// Example: new TextFileCanonicalizer(".txt", ".csv")
-        /// </summary>
-        public TextFileCanonicalizer(params string[] extensions)
+        public TextFileCanonicalizer() : this([".txt"]){}
+
+        public TextFileCanonicalizer(IEnumerable<string> extensions)
         {
-            SupportedExtensions =
-                extensions.Select(e => e.StartsWith(".") ? e : "." + e)
-                          .Select(e => e.ToLowerInvariant())
-                          .ToList();
+            // If no extensions provided, use a default set of common text file extensions
+            _supportedExtensions = new HashSet<string>(
+                extensions.Select(e => e.ToLowerInvariant()),
+                StringComparer.OrdinalIgnoreCase
+            );
         }
 
         public string Canonicalize(string input)

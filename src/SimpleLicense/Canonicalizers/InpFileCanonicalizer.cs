@@ -8,7 +8,19 @@ namespace SimpleLicense.Canonicalizers
         private static readonly Regex SectionHeaderRe = new(@"^\s*\[(?<name>[^\]]+)\]\s*$", RegexOptions.Compiled);
         private static readonly Regex CollapseWhitespaceRe = new(@"\s+", RegexOptions.Compiled);
 
-        public IEnumerable<string> SupportedExtensions => [".inp"];
+        private readonly HashSet<string> _supportedExtensions;
+        public IEnumerable<string> SupportedExtensions => _supportedExtensions;
+
+        public InpFileCanonicalizer() : this([".inp"]){}
+
+        public InpFileCanonicalizer(IEnumerable<string> extensions)
+        {
+            // If no extensions provided, use a default set of common text file extensions
+            _supportedExtensions = new HashSet<string>(
+                extensions.Select(e => e.ToLowerInvariant()),
+                StringComparer.OrdinalIgnoreCase
+            );
+        }
 
         /// <summary>
         /// Canonicalize the contents of an EPANET .inp file according to rules:
