@@ -17,7 +17,6 @@
 /// These operations aim to deliver stable and deterministic text representations while ensuring 
 /// that formatting essential to interpretation—particularly indentation—is left intact.
 /// </remarks>
-
 using System.Text.RegularExpressions;
 using SimpleLicense.Core;
 
@@ -28,7 +27,7 @@ namespace SimpleLicense.Canonicalizers
     /// Applies conservative whitespace cleanup, comment stripping,
     /// and normalization that are generally safe across most text formats.
     /// </summary>
-    public class TextFileCanonicalizer : IFileCanonicalizer
+    public class GenericTextFileCanonicalizer : IFileCanonicalizer
     {
         // Collapse whitespace runs except at line start
         private static readonly Regex CollapseWhitespaceRe =
@@ -36,26 +35,36 @@ namespace SimpleLicense.Canonicalizers
 
         // Common full-line comment prefixes
         private static readonly string[] FullLineCommentMarkers =
-            { "#", ";", "//" };
+            ["#", ";", "//"];
+
+        private static readonly string[] DefaultExtensions = 
+            [".txt", ".md", ".csv", ".log", ".ini", ".conf"];
 
         private readonly HashSet<string> _supportedExtensions;
         public IEnumerable<string> SupportedExtensions => _supportedExtensions;
 
-        public TextFileCanonicalizer() : this([".txt"]){}
+        public GenericTextFileCanonicalizer() : this(DefaultExtensions){}
 
-        public TextFileCanonicalizer(IEnumerable<string> extensions)
+        public GenericTextFileCanonicalizer(IEnumerable<string>? extensions)
         {
             // If no extensions provided, use a default set of common text file extensions
+            var extList = (extensions == null || !extensions.Any()) 
+                ? DefaultExtensions 
+                : extensions;
             _supportedExtensions = new HashSet<string>(
-                extensions.Select(e => e.ToLowerInvariant()),
+                extList.Select(e => e.ToLowerInvariant()),
                 StringComparer.OrdinalIgnoreCase
             );
         }
 
+        /// <summary>
+        /// Canonicalize the given text input according to generic text file rules
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public string Canonicalize(string input)
         {
             ArgumentNullException.ThrowIfNull(input);
-
             // Normalize line endings to '\n'
             input = input.Replace("\r\n", "\n").Replace("\r", "\n");
             var lines = input.Split('\n');
@@ -64,40 +73,30 @@ namespace SimpleLicense.Canonicalizers
             foreach (var rawLine in lines)
             {
                 var line = rawLine;
-
                 // Trim trailing whitespace but DO NOT trim leading whitespace
                 // This preserves indentation for YAML, Python, etc.
                 line = line.TrimEnd();
-
                 // Skip empty lines after trimming trailing whitespace
                 if (string.IsNullOrWhiteSpace(line))
                     continue;
-
                 // Check for full-line comment
                 if (FullLineCommentMarkers.Any(marker => line.TrimStart().StartsWith(marker)))
                     continue;
-
-                // Collapse internal whitespace runs (but preserve leading indentation)
+                // Collapse internal whitespace runs (but preserve leading indentation: spaces and tabs)
                 int leadingSpaces = 0;
-                while (leadingSpaces < line.Length && line[leadingSpaces] == ' ')
+                while (leadingSpaces < line.Length && (line[leadingSpaces] == ' ' || line[leadingSpaces] == '\t'))
                     leadingSpaces++;
-
-                string leading = new string(' ', leadingSpaces);
-                string body = line.Substring(leadingSpaces);
-
+                string leading = new(' ', leadingSpaces);
+                string body = line[leadingSpaces..];
                 // Collapse whitespace inside the body only
                 body = CollapseWhitespaceRe.Replace(body, " ");
-
                 line = leading + body;
-
                 outLines.Add(line);
             }
-
             // Join lines and ensure trailing newline
             var result = string.Join("\n", outLines);
             if (!result.EndsWith("\n"))
                 result += "\n";
-
             return result;
         }
     }

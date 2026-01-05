@@ -11,17 +11,22 @@ namespace SimpleLicense.Canonicalizers
     {
         private static readonly Regex SectionHeaderRe = new(@"^\s*\[(?<name>[^\]]+)\]\s*$", RegexOptions.Compiled);
         private static readonly Regex CollapseWhitespaceRe = new(@"\s+", RegexOptions.Compiled);
+        
+        private static readonly string[] DefaultExtensions = [".inp"];
 
         private readonly HashSet<string> _supportedExtensions;
         public IEnumerable<string> SupportedExtensions => _supportedExtensions;
-
+        
         public InpFileCanonicalizer() : this([".inp"]){}
 
-        public InpFileCanonicalizer(IEnumerable<string> extensions)
+        public InpFileCanonicalizer(IEnumerable<string>? extensions)
         {
             // If no extensions provided, use a default set of common text file extensions
+            var extList = (extensions == null || !extensions.Any()) 
+                ? DefaultExtensions 
+                : extensions;
             _supportedExtensions = new HashSet<string>(
-                extensions.Select(e => e.ToLowerInvariant()),
+                extList.Select(e => e.ToLowerInvariant()),
                 StringComparer.OrdinalIgnoreCase
             );
         }
@@ -79,7 +84,7 @@ namespace SimpleLicense.Canonicalizers
                 // Strip inline comments: anything after ';' is a comment
                 var semIndex = line.IndexOf(';');
                 if (semIndex >= 0)
-                    line = line.Substring(0, semIndex);
+                    line = line[..semIndex];
                 // Trim whitespace
                 line = line.Trim();
                 if (string.IsNullOrEmpty(line))
