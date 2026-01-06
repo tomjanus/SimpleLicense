@@ -3,6 +3,16 @@ namespace SimpleLicense.Utils
 
     internal static class TypeChecking
     {
+        /// <summary>
+        /// Check if the given object is of a numeric type
+        /// </summary>
+        /// <note>
+        /// Implicit conversion to double for most numeric types
+        /// Explicit conversion for decimal to double
+        /// </note>
+        /// <param name="value"></param>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static bool IsNumeric(object? value, out double number)
         {
             switch (value)
@@ -22,6 +32,11 @@ namespace SimpleLicense.Utils
             number = 0; return false;
         }
         
+        /// <summary>
+        /// Get a string description of the type of the given object
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static string DescribeType(object? value)
         {
             return value is null ? "null" : value.GetType().Name;

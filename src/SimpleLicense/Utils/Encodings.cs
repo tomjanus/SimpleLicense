@@ -40,11 +40,13 @@ namespace SimpleLicense.Utils
         /// </summary>
         /// <param name="name">The encoding name</param>
         /// <param name="encoding">The output encoding if found</param>
-        /// <returns>True if the encoding was found, false otherwise</returns>
+        /// <returns>True if the encoding was found, False otherwise</returns>
         public static bool TryGetEncoding(string name, out Encoding? encoding)
         {
-            encoding = null;
-            if (name == null) return false;
+            if (name == null){
+                encoding = null;
+                return false;
+            }
             return _encodings.TryGetValue(name, out encoding);
         }
     }
