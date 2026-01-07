@@ -6,13 +6,32 @@ using System.Text;
 
 namespace SimpleLicense.Core
 {
+    /// <summary>
+    /// Result of key generation process.
+    /// </summary>
+    /// <args>
+    /// - PrivateKeyPath: Path to the generated private key PEM file
+    /// - PublicKeyPath: Path to the generated public key PEM file
+    /// - Success: Indicates if key generation was successful
+    /// </args>
     public class KeyGenerationResult
     {
         public required string PrivateKeyPath { get; init; }
         public required string PublicKeyPath { get; init; }
         public required bool Success { get; init; }
     }
-    internal class KeyGenerator
+
+    /// <summary>
+    /// Generates RSA key pairs and saves them as PEM files.
+    /// </summary>
+    /// <args>
+    /// - KeySize: RSA key size in bits (default 2048; 3072+ recommended)
+    /// - KeyDir: Directory to save generated keys into (default current directory)
+    /// </args>
+    /// <events>
+    /// - OnInfo: Event triggered with informational messages during key generation
+    /// </events>
+    public class KeyGenerator
     {
         public event Action<string>? OnInfo;
         private void Info(string message) => OnInfo?.Invoke(message);
@@ -28,6 +47,10 @@ namespace SimpleLicense.Core
         /// </summary>
         public DirectoryInfo KeyDir { get; set; } = new DirectoryInfo(".");
 
+        /// <summary>
+        /// Initializes a new instance of KeyGenerator with specified key size.
+        /// </summary>
+        /// <param name="keySize">RSA key size in bits (default 2048; 3072+ recommended)</param>
         public KeyGenerator(int keySize = 2048)
         {
             if (keySize < 2048)
@@ -38,6 +61,8 @@ namespace SimpleLicense.Core
         /// <summary>
         /// Generates an RSA key pair using the configured KeySize.
         /// </summary>
+        /// <param name="keyName">Optional base name for the key files. If not provided, a name based on key size and date will be used.</param>
+        /// <returns>KeyGenerationResult containing paths to the generated key files and success status.</
         public KeyGenerationResult GenerateKeys(string? keyName = null)
         {
             if (!KeyDir.Exists)
@@ -74,6 +99,12 @@ namespace SimpleLicense.Core
         // -----BEGIN PRIVATE KEY-----
         // MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQD...
         // -----END PRIVATE KEY-----
+        /// <summary>
+        /// Converts binary key data to PEM format with appropriate headers and footers.
+        /// </summary>
+        /// <param name="label">Label for the PEM block (e.g., "PRIVATE KEY", "PUBLIC KEY")</param>
+        /// <param name="data">Binary key data to encode</param>
+        /// <returns>PEM-formatted string</returns>
         static string Pem(string label, byte[] data)
         {
             string b64 = Convert.ToBase64String(data);

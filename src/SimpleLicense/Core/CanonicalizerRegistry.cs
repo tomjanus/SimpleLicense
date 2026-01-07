@@ -4,8 +4,15 @@ namespace SimpleLicense.Core
 {
 
     /// <summary>
-    /// Registry for file canonicalizers
+    /// Registry for file canonicalizers.
     /// </summary>
+    /// <remarks>
+    /// Example:
+    /// <code>
+    /// CanonicalizerRegistry.LoadFromJson("canonicalizers.json");
+    /// var can = CanonicalizerRegistry.GetCanonicalizer(".txt");
+    /// </code>
+    /// </remarks>
     public static class CanonicalizerRegistry
     {
         private static readonly Dictionary<string, IFileCanonicalizer> _registry = new();
