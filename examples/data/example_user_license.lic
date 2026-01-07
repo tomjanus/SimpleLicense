@@ -1,0 +1,7 @@
+{
+  "LicenseId": null,
+  "ExpiryUtc": "2027-01-01T00:00:00Z",
+  "Files": ["./file1.txt", "./file2.txt"],
+  "Notes": "Example license adhering to 'example_license_template.json'"
+}
+
