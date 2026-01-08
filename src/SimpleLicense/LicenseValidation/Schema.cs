@@ -244,7 +244,7 @@ namespace SimpleLicense.LicenseValidation
         /// <exception cref="InvalidOperationException">
         /// Thrown when the schema is invalid, with details about the validation errors.
         /// </exception>
-        public void Validate()
+        public void ValidateItself()
         {
             var errors = ValidateCore();
             if (errors.Count > 0)
@@ -261,7 +261,7 @@ namespace SimpleLicense.LicenseValidation
         /// <returns>
         /// True if the schema is valid; otherwise, false.
         /// </returns>
-        public bool TryValidate(out IReadOnlyList<string> errors)
+        public bool TryValidateItself(out IReadOnlyList<string> errors)
         {
             var list = ValidateCore();
             errors = list;

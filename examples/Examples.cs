@@ -88,6 +88,7 @@ namespace SimpleLicense.Examples
             // Run all examples by default
             RunExample("License Creation and Validation", 1, LicenseCreationExample.Run);
             RunExample("File Canonicalization", 2, CanonicalizerExample.Run);
+            RunExample("Flexible License Document", 3, FlexibleLicenseExample.Run);
 
             Console.WriteLine();
             ConsoleHelper.WriteDoubleSeparator();

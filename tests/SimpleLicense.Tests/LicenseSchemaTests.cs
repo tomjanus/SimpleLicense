@@ -496,7 +496,7 @@ fields:
             );
 
             // Act & Assert
-            Should.NotThrow(() => schema.Validate());
+            Should.NotThrow(() => schema.ValidateItself());
         }
 
         [Fact]
@@ -512,7 +512,7 @@ fields:
             );
 
             // Act
-            var isValid = schema.TryValidate(out var errors);
+            var isValid = schema.TryValidateItself(out var errors);
 
             // Assert
             isValid.ShouldBeTrue();
@@ -532,7 +532,7 @@ fields:
             );
 
             // Act & Assert
-            var exception = Should.Throw<InvalidOperationException>(() => schema.Validate());
+            var exception = Should.Throw<InvalidOperationException>(() => schema.ValidateItself());
             exception.Message.ShouldContain("Schema name must not be empty");
         }
 
@@ -549,7 +549,7 @@ fields:
             );
 
             // Act
-            var isValid = schema.TryValidate(out var errors);
+            var isValid = schema.TryValidateItself(out var errors);
 
             // Assert
             isValid.ShouldBeFalse();
@@ -564,7 +564,7 @@ fields:
             var schema = new LicenseSchema("TestSchema", new List<FieldDescriptor>());
 
             // Act & Assert
-            var exception = Should.Throw<InvalidOperationException>(() => schema.Validate());
+            var exception = Should.Throw<InvalidOperationException>(() => schema.ValidateItself());
             exception.Message.ShouldContain("at least one field");
         }
 
@@ -582,7 +582,7 @@ fields:
             );
 
             // Act & Assert
-            var exception = Should.Throw<InvalidOperationException>(() => schema.Validate());
+            var exception = Should.Throw<InvalidOperationException>(() => schema.ValidateItself());
             exception.Message.ShouldContain("unique");
             exception.Message.ShouldContain("DuplicateField");
         }
@@ -600,7 +600,7 @@ fields:
             );
 
             // Act & Assert
-            var exception = Should.Throw<InvalidOperationException>(() => schema.Validate());
+            var exception = Should.Throw<InvalidOperationException>(() => schema.ValidateItself());
             exception.Message.ShouldContain("Unsupported type");
             exception.Message.ShouldContain("unsupported_type");
         }
@@ -618,7 +618,7 @@ fields:
             );
 
             // Act & Assert
-            var exception = Should.Throw<InvalidOperationException>(() => schema.Validate());
+            var exception = Should.Throw<InvalidOperationException>(() => schema.ValidateItself());
             exception.Message.ShouldContain("Default value");
             exception.Message.ShouldContain("incompatible");
         }
@@ -636,7 +636,7 @@ fields:
             );
 
             // Act & Assert
-            var exception = Should.Throw<InvalidOperationException>(() => schema.Validate());
+            var exception = Should.Throw<InvalidOperationException>(() => schema.ValidateItself());
             exception.Message.ShouldContain("non-empty Name");
         }
 
@@ -662,7 +662,7 @@ fields:
             );
 
             // Act & Assert
-            Should.NotThrow(() => schema.Validate());
+            Should.NotThrow(() => schema.ValidateItself());
         }
 
         [Fact]
@@ -680,7 +680,7 @@ fields:
             );
 
             // Act
-            var isValid = schema.TryValidate(out var errors);
+            var isValid = schema.TryValidateItself(out var errors);
 
             // Assert
             isValid.ShouldBeFalse();

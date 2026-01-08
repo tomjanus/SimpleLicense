@@ -1,0 +1,10 @@
+<Project>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)config\**\*">
+      <Link>config\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <!-- copy to bin/ for debug/build so app can read at runtime -->
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+</Project>
