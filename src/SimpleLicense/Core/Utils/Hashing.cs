@@ -1,8 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
-using SimpleLicense.Utils;
 
-namespace SimpleLicense.Core
+namespace SimpleLicense.Core.Utils
 {
     public static class TextFileHasher
     {
