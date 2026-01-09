@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace SimpleLicense.Utils
+namespace SimpleLicense.Core.Utils
 {
 
     /// <summary>

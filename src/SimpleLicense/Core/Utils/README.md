@@ -1,8 +1,8 @@
-# SimpleLicense.Utils
+# SimpleLicense.Core.Utils
 
 ## Overview
 
-The **SimpleLicense.Utils** namespace provides utility classes and helper functions for the SimpleLicense library. These utilities handle common tasks like encoding resolution, type checking, and data validation.
+The **SimpleLicense.Core.Utils** namespace provides utility classes and helper functions for the SimpleLicense library. These utilities handle common tasks like encoding resolution, type checking, and data validation.
 
 ## Available Utilities
 
@@ -42,7 +42,7 @@ Gets an `Encoding` object from a string name. Throws an exception if the encodin
 **Usage:**
 
 ```csharp
-using SimpleLicense.Utils;
+using SimpleLicense.Core.Utils;
 using System.Text;
 
 // Get encoding - throws exception if not found
@@ -77,7 +77,7 @@ Attempts to get an `Encoding` object from a string name. Returns `false` if not 
 **Usage:**
 
 ```csharp
-using SimpleLicense.Utils;
+using SimpleLicense.Core.Utils;
 using System.Text;
 
 // Try to get encoding - safe pattern
@@ -164,7 +164,7 @@ Checks if a given object is of a numeric type and outputs its value as a `double
 **Usage:**
 
 ```csharp
-using SimpleLicense.Utils;
+using SimpleLicense.Core.Utils;
 
 object value1 = 42;
 if (TypeChecking.IsNumeric(value1, out double num))
@@ -205,7 +205,7 @@ Returns a human-readable string description of the object's type.
 **Usage:**
 
 ```csharp
-using SimpleLicense.Utils;
+using SimpleLicense.Core.Utils;
 
 object value1 = 42;
 Console.WriteLine(TypeChecking.DescribeType(value1));  // Output: Int32
@@ -302,7 +302,7 @@ All utilities in this namespace are **thread-safe**:
 ### Complete File Processing Example
 
 ```csharp
-using SimpleLicense.Utils;
+using SimpleLicense.Core.Utils;
 using System.Text;
 
 public class FileProcessor

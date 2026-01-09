@@ -1,4 +1,4 @@
-namespace SimpleLicense.Utils
+namespace SimpleLicense.Core.Utils
 {
 
     internal static class TypeChecking
