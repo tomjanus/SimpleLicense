@@ -11,7 +11,7 @@
 
 using System.Text;
 
-namespace SimpleLicense.Core
+namespace SimpleLicense.Core.Utils
 {
     public interface IFileIO
     {
