@@ -1,8 +1,8 @@
-# SimpleLicense.Canonicalizers
+# SimpleLicense.Core.Canonicalizers
 
 ## Overview
 
-The **SimpleLicense.Canonicalizers** module provides file content canonicalization for license verification. Canonicalization normalizes file content to produce deterministic, stable representations that can be reliably hashed and verified across different systems and formats.
+The **SimpleLicense.Core.Canonicalizers** module provides file content canonicalization for license verification. Canonicalization normalizes file content to produce deterministic, stable representations that can be reliably hashed and verified across different systems and formats.
 
 ## What is Canonicalization?
 
@@ -46,7 +46,7 @@ A conservative, format-agnostic canonicalizer for general text files.
 **Usage:**
 
 ```csharp
-using SimpleLicense.Canonicalizers;
+using SimpleLicense.Core.Canonicalizers;
 
 // Use default extensions
 var canonicalizer = new GenericTextFileCanonicalizer();
@@ -94,7 +94,7 @@ Specialized canonicalizer for EPANET `.inp` files (hydraulic network simulation 
 **Usage:**
 
 ```csharp
-using SimpleLicense.Canonicalizers;
+using SimpleLicense.Core.Canonicalizers;
 
 var inpCanonicalizer = new InpFileCanonicalizer();
 
@@ -132,7 +132,7 @@ Canonicalizers are registered with the `CanonicalizerRegistry` and used during l
 
 ```csharp
 using SimpleLicense.Core;
-using SimpleLicense.Canonicalizers;
+using SimpleLicense.Core.Canonicalizers;
 using System.Text;
 
 // Register canonicalizers

@@ -3,9 +3,8 @@
 /// </summary>
 
 using System.Text.RegularExpressions;
-using SimpleLicense.Core;
 
-namespace SimpleLicense.Canonicalizers
+namespace SimpleLicense.Core.Canonicalizers
 {
     public class InpFileCanonicalizer : IFileCanonicalizer
     {

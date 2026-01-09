@@ -18,9 +18,8 @@
 /// that formatting essential to interpretation—particularly indentation—is left intact.
 /// </remarks>
 using System.Text.RegularExpressions;
-using SimpleLicense.Core;
 
-namespace SimpleLicense.Canonicalizers
+namespace SimpleLicense.Core.Canonicalizers
 {
     /// <summary>
     /// Generic fallback canonicalizer for arbitrary plain-text files.
