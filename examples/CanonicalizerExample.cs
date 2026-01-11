@@ -1,4 +1,4 @@
-using SimpleLicense.Canonicalizers;
+using SimpleLicense.Core.Canonicalizers;
 
 namespace SimpleLicense.Examples
 {

@@ -1,4 +1,5 @@
-using SimpleLicense.LicenseValidation;
+using SimpleLicense.Core;
+using SimpleLicense.Core.LicenseValidation;
 
 namespace SimpleLicense.Examples
 {
@@ -23,7 +24,7 @@ namespace SimpleLicense.Examples
             ConsoleHelper.WriteHighlight("Step 1: Creating license from ./data/example_user_license.lic");
             ConsoleHelper.WriteSeparator();
 
-            var license = new LicenseDocument();
+            var license = new License();
             
             // Set mandatory fields (LicenseId was null in the example, so we'll set it)
             license["LicenseId"] = "USR-LIC-2026-001";

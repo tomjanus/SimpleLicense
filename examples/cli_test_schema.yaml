@@ -1,0 +1,23 @@
+name: TestSchema
+fields:
+  - name: LicenseId
+    type: string
+    required: true
+    signed: true
+    processor: GenerateGuid
+  - name: CustomerName
+    type: string
+    required: true
+    signed: true
+  - name: MaxUsers
+    type: int
+    required: true
+    signed: true
+  - name: ExpiryUtc
+    type: datetime
+    required: true
+    signed: true
+  - name: Signature
+    type: string
+    required: false
+    signed: false

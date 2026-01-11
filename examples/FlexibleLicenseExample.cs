@@ -1,5 +1,5 @@
 using SimpleLicense.Core;
-using SimpleLicense.LicenseValidation;
+using SimpleLicense.Core.LicenseValidation;
 using System;
 using System.Collections.Generic;
 
@@ -27,33 +27,41 @@ namespace SimpleLicense.Examples
             ConsoleHelper.WriteSuccess("✓ Keys generated successfully (2048-bit RSA, in-memory)");
             Console.WriteLine();
 
-            // 2. Create a flexible license with custom fields
+            // 2. Create a flexible license with custom fields using schema
             ConsoleHelper.WriteHighlight("Step 2: Creating flexible license with custom fields");
             ConsoleHelper.WriteSeparator();
-            var creator = new LicenseCreator("CUSTOM-LICENSE-2026")
-            {
-                NumberOfValidMonths = 12,
-                LicenseInfo = "Premium Enterprise License",
-                // Add custom fields specific to your application
-                CustomFields = new Dictionary<string, object?>
+            
+            // Define a schema for enterprise licenses
+            var schema = new LicenseSchema(
+                "EnterpriseLicense",
+                new List<FieldDescriptor>
                 {
-                    ["CompanyName"] = "Acme Corporation",
-                    ["MaxUsers"] = 100,
-                    ["Features"] = new List<string> { "Analytics", "API Access", "Priority Support" },
-                    ["Tier"] = "Enterprise",
-                    ["Region"] = "North America",
-                    ["ContactEmail"] = "licensing@acme.com"
+                    new("LicenseId", "string", Required: true, Processor: "GenerateGuid"),
+                    new("ExpiryUtc", "datetime", Required: true),
+                    new("Signature", "string", Required: false),
+                    new("CompanyName", "string", Required: true),
+                    new("MaxUsers", "int", Required: true),
+                    new("Tier", "string", Required: true),
+                    new("Region", "string", Required: true),
+                    new("ContactEmail", "string", Required: true)
                 }
+            );
+
+            // Provide field values
+            var fieldValues = new Dictionary<string, object?>
+            {
+                ["ExpiryUtc"] = DateTime.UtcNow.AddMonths(12),
+                ["CompanyName"] = "Acme Corporation",
+                ["MaxUsers"] = 100,
+                ["Tier"] = "Enterprise",
+                ["Region"] = "North America",
+                ["ContactEmail"] = "licensing@acme.com"
             };
 
-            var license = creator.CreateLicenseDocument();
+            var creator = new LicenseCreator();
+            creator.OnInfo += msg => ConsoleHelper.WriteInfo($"  [Creator] {msg}");
             
-            // You can also add fields after creation
-            license["CustomMetadata"] = new Dictionary<string, object?>
-            {
-                ["CreatedBy"] = "License Server v2.0",
-                ["IssuanceDate"] = DateTime.UtcNow.ToString("o")
-            };
+            var license = creator.CreateLicense(schema, fieldValues);
             
             ConsoleHelper.WriteSuccess("✓ License created with custom fields:");
             ConsoleHelper.WriteInfo($"  License ID: {license["LicenseId"]}");
@@ -116,7 +124,7 @@ namespace SimpleLicense.Examples
             // 7. Demonstrate tampering detection
             ConsoleHelper.WriteHighlight("Step 7: Testing tampering detection");
             ConsoleHelper.WriteSeparator();
-            var tamperedLicense = LicenseDocument.FromJson(licenseJson);
+            var tamperedLicense = License.FromJson(licenseJson);
             ConsoleHelper.WriteInfo("  Modifying MaxUsers from 100 to 500...");
             tamperedLicense["MaxUsers"] = 500; // Tamper with the license
             
@@ -135,7 +143,7 @@ namespace SimpleLicense.Examples
             // 8. Access custom fields
             ConsoleHelper.WriteHighlight("Step 8: Accessing custom fields from verified license");
             ConsoleHelper.WriteSeparator();
-            var verifiedLicense = LicenseDocument.FromJson(licenseJson);
+            var verifiedLicense = License.FromJson(licenseJson);
             ConsoleHelper.WriteInfo($"  Company Name: {verifiedLicense["CompanyName"]}");
             ConsoleHelper.WriteInfo($"  Tier: {verifiedLicense["Tier"]}");
             ConsoleHelper.WriteInfo($"  Region: {verifiedLicense["Region"]}");

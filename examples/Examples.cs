@@ -89,6 +89,10 @@ namespace SimpleLicense.Examples
             RunExample("License Creation and Validation", 1, LicenseCreationExample.Run);
             RunExample("File Canonicalization", 2, CanonicalizerExample.Run);
             RunExample("Flexible License Document", 3, FlexibleLicenseExample.Run);
+            RunExample("License Serialization", 4, SerializationExample.Run);
+            RunExample("Field Serializers", 5, FieldSerializerExample.Run);
+            RunExample("Field Processors", 6, FieldProcessorExample.Run);
+            RunExample("Signing and Verification", 7, SigningAndVerificationExample.Run);
 
             Console.WriteLine();
             ConsoleHelper.WriteDoubleSeparator();
@@ -101,6 +105,11 @@ namespace SimpleLicense.Examples
             ConsoleHelper.WriteSubHeader("Available Examples:");
             Console.WriteLine("  1. License Creation and Validation");
             Console.WriteLine("  2. File Canonicalization");
+            Console.WriteLine("  3. Flexible License Document");
+            Console.WriteLine("  4. License Serialization");
+            Console.WriteLine("  5. Field Serializers");
+            Console.WriteLine("  6. Field Processors");
+            Console.WriteLine("  7. Signing and Verification");
             Console.WriteLine();
             ConsoleHelper.WriteInfo("Run 'dotnet run' to execute all examples");
         }
