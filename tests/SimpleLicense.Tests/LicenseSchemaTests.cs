@@ -1,6 +1,6 @@
 using Xunit;
 using Shouldly;
-using SimpleLicense.LicenseValidation;
+using SimpleLicense.Core.LicenseValidation;
 
 namespace SimpleLicense.Tests
 {

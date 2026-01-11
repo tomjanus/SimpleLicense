@@ -1,6 +1,7 @@
 using Xunit;
 using Shouldly;
-using SimpleLicense.LicenseValidation;
+using SimpleLicense.Core;
+using SimpleLicense.Core.LicenseValidation;
 
 namespace SimpleLicense.Tests
 {
@@ -35,7 +36,7 @@ namespace SimpleLicense.Tests
         public void ValidLicense_ShouldPassValidation()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-001";
             license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
             license["Signature"] = "ABCD1234SIGNATURE";
@@ -54,7 +55,7 @@ namespace SimpleLicense.Tests
         public void ValidLicense_WithOnlyRequiredFields_ShouldPassValidation()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-002";
             license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
             license["Signature"] = "SIGNATURE123";
@@ -70,7 +71,7 @@ namespace SimpleLicense.Tests
         public void MissingRequiredField_ShouldFailValidation()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-003";
             license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
             license["Signature"] = "MISSING_CUSTOMER_NAME";
@@ -89,7 +90,7 @@ namespace SimpleLicense.Tests
         public void MissingMultipleRequiredFields_ShouldFailWithAllErrors()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-004";
             // Missing ExpiryUtc, Signature, and CustomerName
             // Act
@@ -106,7 +107,7 @@ namespace SimpleLicense.Tests
         public void WrongFieldType_String_ShouldFailValidation()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-005";
             license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
             license["Signature"] = "WRONG_TYPE_TEST";
@@ -123,7 +124,7 @@ namespace SimpleLicense.Tests
         public void WrongFieldType_Bool_ShouldFailValidation()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-006";
             license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
             license["Signature"] = "TYPE_TEST";
@@ -141,7 +142,7 @@ namespace SimpleLicense.Tests
         public void ExtraFieldsNotInSchema_ShouldBeAllowed()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-007";
             license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
             license["Signature"] = "EXTRA_FIELDS_TEST";
@@ -162,7 +163,7 @@ namespace SimpleLicense.Tests
         public void ValidateOrThrow_WithValidLicense_ShouldNotThrow()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-008";
             license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
             license["Signature"] = "VALID_SIGNATURE";
@@ -175,7 +176,7 @@ namespace SimpleLicense.Tests
         public void ValidateOrThrow_WithInvalidLicense_ShouldThrowWithErrors()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-009";
             // Missing required fields
             // Act & Assert
@@ -205,7 +206,7 @@ namespace SimpleLicense.Tests
         public void ListField_WithValidElements_ShouldPassValidation()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-010";
             license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
             license["Signature"] = "LIST_TEST";
@@ -222,7 +223,7 @@ namespace SimpleLicense.Tests
         public void ListField_WithWrongElementType_ShouldFailValidation()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-011";
             license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
             license["Signature"] = "LIST_TYPE_TEST";
@@ -261,7 +262,7 @@ namespace SimpleLicense.Tests
         public void IntegerField_WithValidInteger_ShouldPassValidation()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-012";
             license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
             license["Signature"] = "INT_TEST";
@@ -278,7 +279,7 @@ namespace SimpleLicense.Tests
         public void DateTimeField_WithValidDateTime_ShouldPassValidation()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-013";
             license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
             license["Signature"] = "DATETIME_TEST";
@@ -295,7 +296,7 @@ namespace SimpleLicense.Tests
         public void DateTimeField_WithStringValue_ShouldPassIfParseable()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-014";
             license["ExpiryUtc"] = "2027-12-31"; // String that can be parsed
             license["Signature"] = "STRING_DATE_TEST";
@@ -313,7 +314,7 @@ namespace SimpleLicense.Tests
         public void BooleanField_WithValidBoolean_ShouldPassValidation()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license["LicenseId"] = "LIC-2026-015";
             license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
             license["Signature"] = "BOOL_TEST";

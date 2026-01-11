@@ -1,12 +1,14 @@
+using System.Text.Json;
 using Xunit;
 using Shouldly;
-using SimpleLicense.LicenseValidation;
-using System.Text.Json;
+using SimpleLicense.Core;
+using SimpleLicense.Core.LicenseValidation;
+
 
 namespace SimpleLicense.Tests
 {
     /// <summary>
-    /// Tests for LicenseDocument - Field-level validation and serialization
+    /// Tests for License - Field-level validation and serialization
     /// </summary>
     public class LicenseDocumentTests
     {
@@ -14,7 +16,7 @@ namespace SimpleLicense.Tests
         public void Constructor_WithEnsureMandatoryKeys_ShouldCreateMandatoryFields()
         {
             // Arrange & Act
-            var license = new LicenseDocument(ensureMandatoryKeys: true);
+            var license = new License(ensureMandatoryKeys: true);
 
             // Assert
             license["LicenseId"].ShouldBeNull();
@@ -26,7 +28,7 @@ namespace SimpleLicense.Tests
         public void Constructor_WithoutEnsureMandatoryKeys_ShouldNotCreateFields()
         {
             // Arrange & Act
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
 
             // Assert
             license.Fields.ShouldBeEmpty();
@@ -36,7 +38,7 @@ namespace SimpleLicense.Tests
         public void Indexer_Get_ShouldReturnNullForNonExistentField()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
 
             // Assert
             license["NonExistent"].ShouldBeNull();
@@ -46,7 +48,7 @@ namespace SimpleLicense.Tests
         public void Indexer_Set_WithValidValue_ShouldSetField()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
 
             // Act
             license["LicenseId"] = "TEST-12345";
@@ -59,7 +61,7 @@ namespace SimpleLicense.Tests
         public void Indexer_Set_WithInvalidValue_ShouldThrowValidationException()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
 
             // Act & Assert
             Should.Throw<LicenseValidationException>(() => license["LicenseId"] = "");
@@ -69,7 +71,7 @@ namespace SimpleLicense.Tests
         public void Indexer_IsCaseInsensitive()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
             license["LicenseId"] = "TEST-123";
 
             // Act & Assert
@@ -82,7 +84,7 @@ namespace SimpleLicense.Tests
         public void SetField_WithValidValue_ShouldReturnTrueAndSetValue()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
 
             // Act
             var result = license.SetField("LicenseId", "VALID-ID", out var error);
@@ -97,7 +99,7 @@ namespace SimpleLicense.Tests
         public void SetField_WithInvalidValue_ShouldReturnFalseAndSetError()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
 
             // Act
             var result = license.SetField("LicenseId", "", out var error);
@@ -112,7 +114,7 @@ namespace SimpleLicense.Tests
         public void SetField_WithNullOrWhitespaceName_ShouldReturnFalse()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
 
             // Act
             var result = license.SetField("", "value", out var error);
@@ -126,7 +128,7 @@ namespace SimpleLicense.Tests
         public void SetField_WithUnvalidatedField_ShouldStoreRawValue()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
 
             // Act
             var result = license.SetField("CustomField", 42, out var error);
@@ -141,7 +143,7 @@ namespace SimpleLicense.Tests
         public void SetField_WithValidator_ShouldNormalizeValue()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
 
             // Act - LicenseId validator trims whitespace
             var result = license.SetField("LicenseId", "  TRIMMED  ", out var error);
@@ -155,7 +157,7 @@ namespace SimpleLicense.Tests
         public void Fields_ShouldReturnAllFieldsAsEnumerable()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license.SetField("Field1", "Value1", out _);
             license.SetField("Field2", 42, out _);
             license.SetField("Field3", true, out _);
@@ -174,7 +176,7 @@ namespace SimpleLicense.Tests
         public void EnsureMandatoryPresent_WithAllValidFields_ShouldNotThrow()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
             license["LicenseId"] = "TEST-123";
             license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
             license["Signature"] = "valid-signature";
@@ -187,7 +189,7 @@ namespace SimpleLicense.Tests
         public void EnsureMandatoryPresent_WithNullMandatoryField_ShouldThrow()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
             license["LicenseId"] = "TEST-123";
             // ExpiryUtc is null
             license["Signature"] = "sig";
@@ -201,7 +203,7 @@ namespace SimpleLicense.Tests
         public void EnsureMandatoryPresent_WithInvalidMandatoryField_ShouldThrow()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
             license.SetField("LicenseId", "", out _); // This will fail via indexer
             
             // Act & Assert
@@ -212,7 +214,7 @@ namespace SimpleLicense.Tests
         public void EnsureMandatoryPresent_WithMultipleIssues_ShouldReportAll()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
             // All mandatory fields are null (Signature can be null, so only 2 issues expected)
 
             // Act & Assert
@@ -226,7 +228,7 @@ namespace SimpleLicense.Tests
         public void ToJson_WithValidation_ShouldValidateBeforeSerializing()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
             license["LicenseId"] = "TEST-123";
             license["ExpiryUtc"] = new DateTime(2025, 12, 31, 23, 59, 59, DateTimeKind.Utc);
             license["Signature"] = "sig";
@@ -244,7 +246,7 @@ namespace SimpleLicense.Tests
         public void ToJson_WithoutValidation_ShouldSerializeWithoutValidating()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
             license["CustomField"] = "value";
 
             // Act
@@ -259,7 +261,7 @@ namespace SimpleLicense.Tests
         public void ToJson_WithDateTime_ShouldConvertToIsoString()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
             license["LicenseId"] = "TEST";
             license["ExpiryUtc"] = new DateTime(2025, 6, 15, 10, 30, 0, DateTimeKind.Utc);
             license["Signature"] = "sig";
@@ -275,7 +277,7 @@ namespace SimpleLicense.Tests
         public void ToJson_WithInvalidData_AndValidationEnabled_ShouldThrow()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
             // Missing mandatory fields
 
             // Act & Assert
@@ -294,7 +296,7 @@ namespace SimpleLicense.Tests
             }";
 
             // Act
-            var license = LicenseDocument.FromJson(json);
+            var license = License.FromJson(json);
 
             // Assert
             license["LicenseId"].ShouldBe("TEST-123");
@@ -310,7 +312,7 @@ namespace SimpleLicense.Tests
             var json = "{ invalid json }";
 
             // Act & Assert
-            Should.Throw<InvalidOperationException>(() => LicenseDocument.FromJson(json));
+            Should.Throw<InvalidOperationException>(() => License.FromJson(json));
         }
 
         [Fact]
@@ -324,7 +326,7 @@ namespace SimpleLicense.Tests
             }";
 
             // Act & Assert
-            var ex = Should.Throw<LicenseValidationException>(() => LicenseDocument.FromJson(json));
+            var ex = Should.Throw<LicenseValidationException>(() => License.FromJson(json));
             ex.Issues.ShouldContain(i => i.Contains("LicenseId"));
         }
 
@@ -337,7 +339,7 @@ namespace SimpleLicense.Tests
             }";
 
             // Act
-            var license = LicenseDocument.FromJson(json);
+            var license = License.FromJson(json);
 
             // Assert
             license["LicenseId"].ShouldBeNull();
@@ -364,7 +366,7 @@ namespace SimpleLicense.Tests
             }";
 
             // Act
-            var license = LicenseDocument.FromJson(json);
+            var license = License.FromJson(json);
 
             // Assert
             license["IsActive"].ShouldBe(true);
@@ -378,7 +380,7 @@ namespace SimpleLicense.Tests
         public void ToJson_ThenFromJson_ShouldRoundTrip()
         {
             // Arrange
-            var original = new LicenseDocument();
+            var original = new License();
             original["LicenseId"] = "ROUND-TRIP-123";
             original["ExpiryUtc"] = new DateTime(2025, 12, 31, 0, 0, 0, DateTimeKind.Utc);
             original["Signature"] = "signature-data";
@@ -387,7 +389,7 @@ namespace SimpleLicense.Tests
 
             // Act
             var json = original.ToJson();
-            var restored = LicenseDocument.FromJson(json);
+            var restored = License.FromJson(json);
 
             // Assert
             restored["LicenseId"].ShouldBe("ROUND-TRIP-123");
@@ -409,8 +411,8 @@ namespace SimpleLicense.Tests
             };
 
             // Act
-            LicenseDocument.RegisterFieldValidator("TestField", customValidator);
-            var license = new LicenseDocument();
+            License.RegisterFieldValidator("TestField", customValidator);
+            var license = new License();
             license.SetField("TestField", "test", out _);
 
             // Assert
@@ -481,7 +483,7 @@ namespace SimpleLicense.Tests
         public void SetField_WithMultipleValidations_ShouldApplyInOrder()
         {
             // Arrange
-            var license = new LicenseDocument();
+            var license = new License();
 
             // Act - Set multiple fields with validation
             license.SetField("LicenseId", "  ID-123  ", out _); // Should trim
@@ -498,7 +500,7 @@ namespace SimpleLicense.Tests
         public void Fields_ShouldBeCaseInsensitiveInEnumeration()
         {
             // Arrange
-            var license = new LicenseDocument(ensureMandatoryKeys: false);
+            var license = new License(ensureMandatoryKeys: false);
             license.SetField("TestField", "value", out _);
 
             // Act

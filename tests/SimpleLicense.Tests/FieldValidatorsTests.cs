@@ -1,7 +1,8 @@
+using System.Text.Json;
 using Xunit;
 using Shouldly;
-using SimpleLicense.LicenseValidation;
-using System.Text.Json;
+
+using SimpleLicense.Core.LicenseValidation;
 
 namespace SimpleLicense.Tests
 {

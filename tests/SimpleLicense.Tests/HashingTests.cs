@@ -1,6 +1,7 @@
 using Xunit;
 using Shouldly;
 using SimpleLicense.Core;
+using SimpleLicense.Core.Utils;
 using System.Text;
 using System.IO;
 
