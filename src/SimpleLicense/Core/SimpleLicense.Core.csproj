@@ -6,8 +6,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <AssemblyName>slic</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- Exclude CLI subfolder from compilation -->
+    <Compile Remove="CLI\**" />
+    <EmbeddedResource Remove="CLI\**" />
+    <None Remove="CLI\**" />
+  </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NodaTime" Version="3.2.2" />
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
+  </ItemGroup>
+  
 </Project>

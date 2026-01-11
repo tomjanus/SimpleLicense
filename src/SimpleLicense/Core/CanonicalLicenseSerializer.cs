@@ -1,7 +1,8 @@
 //
 using System.Text;
 using System.Text.Json;
-using SimpleLicense.LicenseValidation;
+using SimpleLicense.Core;
+using SimpleLicense.Core.LicenseValidation;
 
 namespace SimpleLicense.Core
 {
@@ -12,21 +13,11 @@ namespace SimpleLicense.Core
         
         public CanonicalLicenseSerializer() : base(JsonProfiles.Canonical) {}
 
-        public new byte[] Serialize(License license)
-        {
-            return GetCanonicalUtf8BytesFromObject(license, UnSerializedFields);
-        }
-
-        public License Deserialize(byte[] canonicalJsonBytes)
-        {
-            return FromCanonicalBytes(canonicalJsonBytes);
-        }
-
         /// <summary>
         /// Serializes a LicenseDocument to canonical UTF-8 bytes.
         /// Excludes "Signature" field and any fields in UnSerializedFields list.
         /// </summary>
-        public byte[] SerializeLicenseDocument(LicenseDocument license)
+        public byte[] SerializeLicenseDocument(License license)
         {
             ArgumentNullException.ThrowIfNull(license);
             
@@ -39,51 +30,20 @@ namespace SimpleLicense.Core
         /// <summary>
         /// Deserializes a LicenseDocument from canonical JSON bytes.
         /// </summary>
-        public LicenseDocument DeserializeLicenseDocument(byte[] canonicalJsonBytes)
+        public License DeserializeLicenseDocument(byte[] canonicalJsonBytes)
         {
             ArgumentNullException.ThrowIfNull(canonicalJsonBytes);
             string json = Encoding.UTF8.GetString(canonicalJsonBytes);
-            return LicenseDocument.FromJson(json);
+            return License.FromJson(json);
         }
 
         /// <summary>
         /// Deserializes a LicenseDocument from canonical JSON string.
         /// </summary>
-        public LicenseDocument DeserializeLicenseDocument(string json)
+        public new License DeserializeLicenseDocument(string json)
         {
             ArgumentNullException.ThrowIfNull(json);
-            return LicenseDocument.FromJson(json);
-        }
-
-        /// <summary>
-        /// Get canonical UTF-8 bytes from an object by serializing with given options,
-        /// parsing the JSON, and then producing canonical JSON with sorted keys excluding "signature".
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="obj"></param>
-        /// <param name="options"></param>
-        /// <returns></returns>
-        private byte[] GetCanonicalUtf8BytesFromObject<T>(T obj, List<string>? unserializedFields = null)
-        {
-            // 1) Produce a deterministic initial JSON.
-            var initialBytes = JsonSerializer.SerializeToUtf8Bytes(obj, Options);
-            // 2) Parse produced JSON into JsonDocument and canonicalize (sort keys, compact).
-            using var doc = JsonDocument.Parse(initialBytes);
-            var root = doc.RootElement;
-            return BuildCanonicalUtf8BytesExcludingSignature(root, unserializedFields);
-        }
-
-        /// <summary>
-        /// Deserialize a License from canonical JSON bytes.
-        /// </summary>
-        /// <param name="canonicalJsonBytes"></param>
-        /// <returns></returns>
-        private License FromCanonicalBytes(byte[] canonicalJsonBytes)
-        {
-            ArgumentNullException.ThrowIfNull(canonicalJsonBytes);
-            string json = Encoding.UTF8.GetString(canonicalJsonBytes);
-            return JsonSerializer.Deserialize<License>(json, Options)
-                ?? throw new InvalidOperationException("Deserialization produced null License.");
+            return License.FromJson(json);
         }
 
         /// <summary>
@@ -190,26 +150,6 @@ namespace SimpleLicense.Core
                     writer.WriteRawValue(elem.GetRawText(), skipInputValidation: true);
                     break;
             }
-        }
-
-        static void MainCanonicalSerializer()
-        {
-            var original = new License(
-                LicenseId: Guid.NewGuid().ToString(),
-                LicenseInfo: "Standard Styx License",
-                ExpiryUtc: null,
-                MaxJunctions: null,
-                AllowedFileHashes: null,
-                Signature: null
-            );
-            CanonicalLicenseSerializer serializer = new CanonicalLicenseSerializer();
-            LicenseSerializer standardSerializer = new LicenseSerializer();
-            byte[] canonical = serializer.Serialize(original);
-            License recovered = serializer.Deserialize(canonical);
-            Console.WriteLine("Original License:");
-            Console.WriteLine(standardSerializer.Serialize(original));
-            Console.WriteLine("Recovered License from Canonical Bytes:");
-            Console.WriteLine(standardSerializer.Serialize(recovered));
         }
     }
 }

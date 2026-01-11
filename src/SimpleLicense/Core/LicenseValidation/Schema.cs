@@ -51,6 +51,13 @@ namespace SimpleLicense.Core.LicenseValidation
         public object? DefaultValue { get; init; } = null;
 
         /// <summary>
+        /// Optional processor name to apply during license creation.
+        /// The processor transforms the input value before validation and serialization.
+        /// Example: "HashFiles" to compute file hashes, "GenerateGuid" to auto-generate IDs.
+        /// </summary>
+        public string? Processor { get; init; } = null;
+
+        /// <summary>
         /// Parameterless constructor for deserialization.
         /// </summary>
         public FieldDescriptor()
@@ -60,13 +67,20 @@ namespace SimpleLicense.Core.LicenseValidation
         /// <summary>
         /// Creates a new field descriptor with the specified parameters.
         /// </summary>
-        public FieldDescriptor(string Name, string Type, bool Signed = true, bool Required = false, object? DefaultValue = null)
+        public FieldDescriptor(
+            string Name, 
+            string Type, 
+            bool Signed = true, 
+            bool Required = false, 
+            object? DefaultValue = null,
+            string? Processor = null)
         {
             this.Name = Name;
             this.Type = Type;
             this.Signed = Signed;
             this.Required = Required;
             this.DefaultValue = DefaultValue;
+            this.Processor = Processor;
         }
     };
 

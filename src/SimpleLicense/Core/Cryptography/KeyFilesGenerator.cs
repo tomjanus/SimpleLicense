@@ -4,7 +4,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace SimpleLicense.Core
+namespace SimpleLicense.Core.Cryptography
 {
     /// <summary>
     /// Result of key generation process.

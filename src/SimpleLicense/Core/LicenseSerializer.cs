@@ -1,9 +1,10 @@
-// JSON serialization / deserialization for License
+// JSON serialization / deserialization for License and LicenseDocument
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Reflection;
-using SimpleLicense.Utils;
+using SimpleLicense.Core.Utils;
+using SimpleLicense.Core.LicenseValidation;
 
 namespace SimpleLicense.Core
 {
@@ -36,7 +37,7 @@ namespace SimpleLicense.Core
     }
 
     /// <summary>
-    /// JSON serialization / deserialization for License, with configurable options per instance.
+    /// JSON serialization / deserialization for License and LicenseDocument, with configurable options per instance.
     /// </summary>
     public class LicenseSerializer
     {
@@ -59,14 +60,59 @@ namespace SimpleLicense.Core
             Options = options ?? _defaultOptions;
         }
 
-        public string Serialize(License license)
+
+        /// <summary>
+        /// Serializes a LicenseDocument to JSON string.
+        /// Uses the document's built-in ToJson() method if validate is true,
+        /// otherwise uses standard JSON serialization.
+        /// </summary>
+        /// <param name="license">The LicenseDocument to serialize</param>
+        /// <param name="validate">If true, validates mandatory fields before serialization</param>
+        /// <returns>JSON string representation of the license</returns>
+        public string SerializeLicenseDocument(License license, bool validate = false)
         {
-            return JsonSerializer.Serialize(license, Options);
+            ArgumentNullException.ThrowIfNull(license);
+            
+            if (validate)
+            {
+                return license.ToJson(validate: true);
+            }
+            
+            // Use standard JSON serialization for the fields dictionary
+            return license.ToJson(validate: false);
         }
 
-        public License Deserialize(string json)
+        /// <summary>
+        /// Deserializes a LicenseDocument from JSON string.
+        /// Uses LicenseDocument's built-in FromJson() method which handles field validation.
+        /// </summary>
+        /// <param name="json">JSON string to deserialize</param>
+        /// <returns>A new LicenseDocument instance</returns>
+        /// <exception cref="InvalidOperationException">Thrown when JSON parsing fails</exception>
+        /// <exception cref="LicenseValidationException">Thrown when field validation fails</exception>
+        public License DeserializeLicenseDocument(string json)
         {
-            return JsonSerializer.Deserialize<License>(json, Options)!;
+            ArgumentNullException.ThrowIfNull(json);
+            return License.FromJson(json);
+        }
+
+        /// <summary>
+        /// Serializes a LicenseDocument to UTF-8 byte array.
+        /// </summary>
+        public byte[] SerializeLicenseDocumentToBytes(License license, bool validate = false)
+        {
+            var json = SerializeLicenseDocument(license, validate);
+            return Encoding.UTF8.GetBytes(json);
+        }
+
+        /// <summary>
+        /// Deserializes a LicenseDocument from UTF-8 byte array.
+        /// </summary>
+        public License DeserializeLicenseDocumentFromBytes(byte[] bytes)
+        {
+            ArgumentNullException.ThrowIfNull(bytes);
+            var json = Encoding.UTF8.GetString(bytes);
+            return DeserializeLicenseDocument(json);
         }
     }
 }

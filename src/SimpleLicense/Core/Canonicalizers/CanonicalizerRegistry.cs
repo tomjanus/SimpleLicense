@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace SimpleLicense.Core
+namespace SimpleLicense.Core.Canonicalizers
 {
 
     /// <summary>

@@ -36,6 +36,83 @@ using SimpleLicense.Core.Utils;
 
 namespace SimpleLicense.Core.LicenseValidation
 {
+
+    /// <summary>
+    /// Exception thrown when license validation fails.
+    /// Contains a list of issues found.
+    /// </summary>
+    public class LicenseValidationException : Exception
+    {
+        public IReadOnlyList<string> Issues { get; }
+
+        public LicenseValidationException(IEnumerable<string>? issues)
+            : base(CreateMessage(issues))
+        {
+            Issues = issues?.ToList() ?? new List<string>();
+        }
+
+        private static string CreateMessage(IEnumerable<string>? issues)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("License validation failed with the following issue(s):");
+            if (issues is null)
+            {
+                sb.AppendLine(" - (no details provided)");
+                return sb.ToString();
+            }
+            if (issues.Any())
+            {
+                foreach (var issue in issues)
+                {
+                    sb.AppendLine($" - {issue}");
+                }
+            }
+            return sb.ToString();
+        }
+    }
+
+    /// <summary>
+    /// Represents the outcome of a validation operation, including whether it
+    /// succeeded, an optional validation output value, and an error message
+    /// if validation failed.
+    /// </summary>
+    public readonly struct ValidationResult
+    {
+        /// <summary>
+        /// Gets a value indicating whether the validation succeeded.
+        /// </summary>
+        public bool IsValid { get; }
+        /// <summary>
+        /// Gets the value produced by the validator when validation succeeds.
+        /// This may contain a transformed or normalized value. When validation
+        /// fails, this value is typically <c>null</c>.
+        /// </summary>
+        public object? OutputValue { get; }
+        /// <summary>
+        /// Gets the error message describing why validation failed, or
+        /// <c>null</c> when validation succeeds.
+        /// </summary>
+        public string? Error { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ValidationResult"/> struct.
+        /// </summary>
+        /// <param name="isValid">Indicates whether validation was successful.</param>
+        /// <param name="outputValue">The resulting value when validation succeeds; otherwise <c>null</c>.</param>
+        /// <param name="error">
+        /// The error message when validation fails; otherwise <c>null</c>.
+        /// </param>
+        public ValidationResult(bool isValid, object? outputValue = null, string? error = null)
+        {
+            IsValid = isValid;
+            OutputValue = outputValue;
+            Error = error;
+        }
+
+        public static ValidationResult Success(object? outputValue) => new(true, outputValue, null);
+        public static ValidationResult Fail(string error) => new(false, null, error);
+    }
+    
     /// <summary>
     /// Validates a LicenseDocument against a LicenseSchema to ensure all
     /// required fields are present and have the correct types.

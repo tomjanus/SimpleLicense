@@ -16,85 +16,10 @@
 using System.Text;
 using System.Text.Json;
 using SimpleLicense.Core.Utils;
+using SimpleLicense.Core.LicenseValidation;
 
-namespace SimpleLicense.Core.LicenseValidation
+namespace SimpleLicense.Core
 {
-
-    /// <summary>
-    /// Exception thrown when license validation fails.
-    /// Contains a list of issues found.
-    /// </summary>
-    public class LicenseValidationException : Exception
-    {
-        public IReadOnlyList<string> Issues { get; }
-
-        public LicenseValidationException(IEnumerable<string>? issues)
-            : base(CreateMessage(issues))
-        {
-            Issues = issues?.ToList() ?? new List<string>();
-        }
-
-        private static string CreateMessage(IEnumerable<string>? issues)
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("License validation failed with the following issue(s):");
-            if (issues is null)
-            {
-                sb.AppendLine(" - (no details provided)");
-                return sb.ToString();
-            }
-            if (issues.Any())
-            {
-                foreach (var issue in issues)
-                {
-                    sb.AppendLine($" - {issue}");
-                }
-            }
-            return sb.ToString();
-        }
-    }
-
-    /// <summary>
-    /// Represents the outcome of a validation operation, including whether it
-    /// succeeded, an optional validation output value, and an error message
-    /// if validation failed.
-    /// </summary>
-    public readonly struct ValidationResult
-    {
-        /// <summary>
-        /// Gets a value indicating whether the validation succeeded.
-        /// </summary>
-        public bool IsValid { get; }
-        /// <summary>
-        /// Gets the value produced by the validator when validation succeeds.
-        /// This may contain a transformed or normalized value. When validation
-        /// fails, this value is typically <c>null</c>.
-        /// </summary>
-        public object? OutputValue { get; }
-        /// <summary>
-        /// Gets the error message describing why validation failed, or
-        /// <c>null</c> when validation succeeds.
-        /// </summary>
-        public string? Error { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ValidationResult"/> struct.
-        /// </summary>
-        /// <param name="isValid">Indicates whether validation was successful.</param>
-        /// <param name="outputValue">The resulting value when validation succeeds; otherwise <c>null</c>.</param>
-        /// <param name="error">
-        /// The error message when validation fails; otherwise <c>null</c>.
-        /// </param>
-        public ValidationResult(bool isValid, object? outputValue = null, string? error = null)
-        {
-            IsValid = isValid;
-            OutputValue = outputValue;
-            Error = error;
-        }
-
-        public static ValidationResult Success(object? outputValue) => new(true, outputValue, null);
-        public static ValidationResult Fail(string error) => new(false, null, error);
-    }
 
     /// <summary>
     /// Represents a license document with mandatory and custom fields.
@@ -229,6 +154,7 @@ namespace SimpleLicense.Core.LicenseValidation
         /// <summary>
         /// Serializes the LicenseDocument to JSON.
         /// Optionally validates mandatory fields before serialization.
+        /// Applies registered field serializers to convert field values to JSON-compatible formats.
         /// </summary>
         /// <param name="validate">If true, runs EnsureMandatoryPresent before serialization.</param>
         /// <returns>JSON string representation of the license</returns>
@@ -238,10 +164,17 @@ namespace SimpleLicense.Core.LicenseValidation
 
             var outDict = new Dictionary<string, object?>(_fields, StringComparer.OrdinalIgnoreCase);
 
-            // If ExpiryUtc is a DateTime, produce ISO string for JSON consumers
-            if (outDict.TryGetValue("ExpiryUtc", out var expiry) && expiry is DateTime dt)
+            // Apply field serializers to convert values to JSON-compatible formats
+            var keysToProcess = outDict.Keys.ToList(); // Copy keys to avoid modification during enumeration
+            foreach (var key in keysToProcess)
             {
-                outDict["ExpiryUtc"] = dt.ToUniversalTime().ToString("o");
+                var value = outDict[key];
+                
+                // Check if a serializer exists for this field
+                if (FieldSerializers.TryGetSerializer(key, out var serializer) && serializer != null)
+                {
+                    outDict[key] = serializer(value);
+                }
             }
 
             try
@@ -322,6 +255,19 @@ namespace SimpleLicense.Core.LicenseValidation
         public static void RegisterFieldValidator(string fieldName, FieldValidator validator)
         {
             FieldValidators.Register(fieldName, validator);
+        }
+
+        /// <summary>
+        /// Registers a custom serializer for a specific field.
+        /// This adds or overrides a serializer in the global FieldSerializers registry.
+        /// </summary>
+        /// <param name="fieldName">The field name (case-insensitive)</param>
+        /// <param name="serializer">The serializer function</param>
+        /// <exception cref="ArgumentException">Thrown when fieldName is null or whitespace</exception>
+        /// <exception cref="ArgumentNullException">Thrown when serializer is null</exception>
+        public static void RegisterFieldSerializer(string fieldName, FieldSerializer serializer)
+        {
+            FieldSerializers.Register(fieldName, serializer);
         }
 
         /// <summary>
