@@ -4,7 +4,7 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleLicense", "src\SimpleLicense\SimpleLicense.csproj", "{2B9C8F70-A9B2-691D-F12F-F032621E2E6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLI", "src\CLI\CLI.csproj", "{C1F3A9D2-4B6E-4E8F-9A2C-0F3B12D45E67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLI", "src\SimpleLicense\CLI\SimpleLicense.CLI.csproj", "{C1F3A9D2-4B6E-4E8F-9A2C-0F3B12D45E67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

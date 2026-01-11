@@ -1,4 +1,4 @@
 {
-  "SimpleLicense.Canonicalizers.InpFileCanonicalizer": [".inp"],
-  "SimpleLicense.Canonicalizers.GenericTextFileCanonicalizer": [".txt", ".md"]
+  "SimpleLicense.Core.Canonicalizers.InpFileCanonicalizer": [".inp"],
+  "SimpleLicense.Core.Canonicalizers.GenericTextFileCanonicalizer": [".txt", ".md"]
 }
