@@ -213,6 +213,6 @@ All canonicalizers in this module are thread-safe and can be reused across multi
 
 ## See Also
 
-- [CanonicalizerRegistry](../Core/CanonicalizerRegistry.cs) - Registry for managing canonicalizers
-- [LicenseCreator](../Core/LicenseCreator.cs) - Uses canonicalizers during license creation
-- [LicenseVerifier](../Core/LicenseVerifier.cs) - Uses canonicalizers during verification
+- [CanonicalizerRegistry](../Canonicalizers/CanonicalizerRegistry.cs) - Registry for managing canonicalizers
+- [LicenseCreator](../LicenseCreator.cs) - Uses canonicalizers during license creation
+- [LicenseVerifier](../LicenseVerifier.cs) - Uses canonicalizers during verification
