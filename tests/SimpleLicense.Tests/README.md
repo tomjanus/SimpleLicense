@@ -374,4 +374,4 @@ When adding new features:
 
 **Test Coverage Target**: >80% line coverage across all core functionality  
 **Last Updated**: January 2026  
-**Maintainer**: SimpleLicense Development Team
+**Maintainer**: Tomasz Janus [@tomjanus]

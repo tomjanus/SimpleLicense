@@ -494,6 +494,7 @@ Built with:
 
 - **Documentation**: See [src/SimpleLicense/Core/README.md](src/SimpleLicense/Core/README.md)
 - **Examples**: See [examples/README.md](examples/README.md)
+- **Tests**: See [tests/SimpleLicense.Tests/README.md](tests/SimpleLicense.Tests/README.md)
 - **Issues**: Please report issues on the GitHub repository
 
 ---
