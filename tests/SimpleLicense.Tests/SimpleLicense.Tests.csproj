@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SimpleLicense\SimpleLicense.csproj" />
+    <ProjectReference Include="..\..\src\SimpleLicense\Core\SimpleLicense.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
