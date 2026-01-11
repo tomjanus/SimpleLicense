@@ -2,9 +2,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleLicense", "src\SimpleLicense\SimpleLicense.csproj", "{2B9C8F70-A9B2-691D-F12F-F032621E2E6A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleLicense.Core", "src\SimpleLicense\Core\SimpleLicense.Core.csproj", "{2B9C8F70-A9B2-691D-F12F-F032621E2E6A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CLI", "src\SimpleLicense\CLI\SimpleLicense.CLI.csproj", "{C1F3A9D2-4B6E-4E8F-9A2C-0F3B12D45E67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleLicense.CLI", "src\SimpleLicense\CLI\SimpleLicense.CLI.csproj", "{C1F3A9D2-4B6E-4E8F-9A2C-0F3B12D45E67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleLicense.Tests", "tests\SimpleLicense.Tests\SimpleLicense.Tests.csproj", "{3D8E9F12-5C6D-4A3B-8E7F-1A2B3C4D5E6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "examples\Examples.csproj", "{4E9F0123-6D7E-5B4C-9F8E-2B3C4D5E6F7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,16 @@ Global
 		{C1F3A9D2-4B6E-4E8F-9A2C-0F3B12D45E67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1F3A9D2-4B6E-4E8F-9A2C-0F3B12D45E67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1F3A9D2-4B6E-4E8F-9A2C-0F3B12D45E67}.Release|Any CPU.Build.0 = Release|Any CPU
+
+		{3D8E9F12-5C6D-4A3B-8E7F-1A2B3C4D5E6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D8E9F12-5C6D-4A3B-8E7F-1A2B3C4D5E6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D8E9F12-5C6D-4A3B-8E7F-1A2B3C4D5E6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D8E9F12-5C6D-4A3B-8E7F-1A2B3C4D5E6F}.Release|Any CPU.Build.0 = Release|Any CPU
+
+		{4E9F0123-6D7E-5B4C-9F8E-2B3C4D5E6F7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E9F0123-6D7E-5B4C-9F8E-2B3C4D5E6F7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E9F0123-6D7E-5B4C-9F8E-2B3C4D5E6F7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E9F0123-6D7E-5B4C-9F8E-2B3C4D5E6F7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
