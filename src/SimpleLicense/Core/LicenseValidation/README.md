@@ -2,13 +2,13 @@
 
 ## Overview
 
-`SimpleLicense` provides a flexible system for creating, managing, and validating software licenses. At its core is the **`LicenseDocument`** class, which represents a license as a collection of named fields with values. This license data structure is passed to your application to control features, enforce limits, and manage license lifecycle.
+`SimpleLicense` provides a flexible system for creating, managing, and validating software licenses. At its core is the **`License`** class, which represents a license as a collection of named fields with values. This license data structure is passed to your application to control features, enforce limits, and manage license lifecycle.
 
 The system also includes an optional **two-tier validation system** that provides field-level data validation (Tier 1) and schema-level structural validation (Tier 2). The field-level validation ensures that individual field values are correct and well-formed when they are set, while the schema-level validation checks that the overall license structure conforms to a defined schema, i.e. that required fields are present and of the correct type.
 
 ### What is a License?
 
-A **`LicenseDocument`** is the central data structure in `SimpleLicense`. It represents a license as a flexible, field-based document where:
+A **`License`** is the central data structure in `SimpleLicense`. It represents a license as a flexible, field-based document where:
 - Each field has a **name** (e.g., `"LicenseId"`, `"MaxUsers"`, `"ExpiryUtc"`)
 - Each field has a **value** (e.g., `"LIC-2026-001"`, `100`, `DateTime`)
 - Fields are case-insensitive (`"LicenseId"` == `"licenseid"`)
@@ -16,15 +16,16 @@ A **`LicenseDocument`** is the central data structure in `SimpleLicense`. It rep
 - There are three mandatory fields: `LicenseId`, `ExpiryUtc`, `Signature`. These fields are required for all licenses, because every license needs a unique identifier, an expiration date, and a signature. Other fields are optional and can be defined as needed
 - The non-mandatory fields can be used to store custom data relevant to your application, such as user limits, feature flags, customer information, etc.
 
-**Location:** [`src/SimpleLicense/LicenseValidation/License.cs`](License.cs)
+**Location:** [`../License.cs`](../License.cs)
 
 ### Creating a License
 
 ```csharp
+using SimpleLicense.Core;
 using SimpleLicense.Core.LicenseValidation;
 
 // Create a new license
-var license = new LicenseDocument();
+var license = new License();
 
 // Set mandatory fields
 license["LicenseId"] = "LIC-2026-001";
@@ -54,7 +55,7 @@ File.WriteAllText("license.json", json);
 
 // Load license from JSON
 string json = File.ReadAllText("license.json");
-var license = LicenseDocument.FromJson(json);
+var license = License.FromJson(json);
 
 // Validate mandatory fields are present
 license.EnsureMandatoryPresent();
@@ -167,7 +168,7 @@ While licenses are flexible and can contain any fields, you may want to enforce 
 ### Tier 1: Field-Level Validation (`FieldValidators.cs`)
 
 **Purpose:** Validates individual field VALUES  
-**When Applied:** When setting a field in a `LicenseDocument`  
+**When Applied:** When setting a field in a `License`  
 **What It Checks:** Data quality, format, range, type conversion
 
 **Example Validations:**
@@ -178,7 +179,7 @@ While licenses are flexible and can contain any fields, you may want to enforce 
 
 **Code Example:**
 ```csharp
-var license = new LicenseDocument();
+var license = new License();
 license["LicenseId"] = "LIC-2026-001";  // ✓ Valid
 license["LicenseId"] = "";               // ✗ Throws exception: empty string
 license["MaxUsers"] = 50;                // ✓ Valid
@@ -199,10 +200,10 @@ license["MaxUsers"] = "notanumber";      // ✗ Throws exception: not numeric
 
 **Code Example:**
 ```csharp
-var schema = LicenseSchema.FromFile("schema.json");
+var schema = LicenseSchema.FromYaml(File.ReadAllText("schema.yaml"));
 var validator = new LicenseValidator(schema);
 
-var license = new LicenseDocument();
+var license = new License();
 license["LicenseId"] = "LIC-2026-001";
 license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
 license["Signature"] = "ABC123";
@@ -226,11 +227,11 @@ bool isValid = validator.Validate(license, out var errors);
 
 ### 1. FieldValidators (Field-Level)
 
-**Location:** [`src/SimpleLicense/Schema/FieldValidators.cs`](src/SimpleLicense/Schema/FieldValidators.cs)
+**Location:** [`FieldValidators.cs`](FieldValidators.cs)
 
 **Key Features:**
 - **Auto-discovery**: Validators marked with `[FieldValidator("FieldName")]` are automatically registered
-- **Global registry**: Validators are shared across all `LicenseDocument` instances
+- **Global registry**: Validators are shared across all `License` instances
 - **Extensible**: Easy to add custom validators
 
 **Default Validators:**
@@ -265,18 +266,11 @@ FieldValidators.Register("CustomField", value =>
     // Your validation logic
     return ValidationResult.Success(value);
 });
-
-// Method 3: Via LicenseDocument
-LicenseDocument.RegisterFieldValidator("CustomField", value =>
-{
-    // Your validation logic
-    return ValidationResult.Success(value);
-});
 ```
 
-### 2. LicenseDocument (Field-Level Application)
+### 2. License (Field-Level Application)
 
-**Location:** [`src/SimpleLicense/Schema/License.cs`](src/SimpleLicense/Schema/License.cs)
+**Location:** [`../License.cs`](../License.cs)
 
 **Key Features:**
 - Uses `FieldValidators` registry for validation
@@ -291,7 +285,7 @@ LicenseDocument.RegisterFieldValidator("CustomField", value =>
 
 ### 3. LicenseValidator (Schema-Level)
 
-**Location:** [`src/SimpleLicense/Schema/LicenseValidator.cs`](src/SimpleLicense/Schema/LicenseValidator.cs)
+**Location:** [`LicenseValidator.cs`](LicenseValidator.cs)
 
 **Key Features:**
 - Validates against `LicenseSchema` definitions
@@ -306,7 +300,7 @@ LicenseDocument.RegisterFieldValidator("CustomField", value =>
 
 ### 4. LicenseSchema (Schema Definition)
 
-**Location:** [`src/SimpleLicense/Schema/Schema.cs`](src/SimpleLicense/Schema/Schema.cs)
+**Location:** [`Schema.cs`](Schema.cs)
 
 **Key Features:**
 - Defines expected license structure
@@ -333,13 +327,15 @@ LicenseDocument.RegisterFieldValidator("CustomField", value =>
 ### Complete Example
 
 ```csharp
-using SimpleLicense.Schema;
+using SimpleLicense.Core;
+using SimpleLicense.Core.LicenseValidation;
 
 // 1. Load schema
-var schema = LicenseSchema.FromFile("license-schema.json");
+var schemaYaml = File.ReadAllText("license-schema.yaml");
+var schema = LicenseSchema.FromYaml(schemaYaml);
 
 // 2. Create license document
-var license = new LicenseDocument();
+var license = new License();
 
 // 3. Set fields (field-level validation happens here)
 try
@@ -479,7 +475,7 @@ if (!validator.Validate(license, out var errors))
 
 ## Testing
 
-See [`LicenseValidatorDemo.Main()`](src/SimpleLicense/Schema/LicenseValidator.cs) for comprehensive test cases demonstrating:
+See the test suite in [`tests/SimpleLicense.Tests/`](../../../../tests/SimpleLicense.Tests/) for comprehensive test cases demonstrating:
 - Valid license validation
 - Missing required field detection
 - Wrong type detection
