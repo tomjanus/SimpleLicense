@@ -9,7 +9,7 @@ A flexible, schema-driven .NET library and CLI tool for creating, signing, valid
 
 ## Overview
 
-**SimpleLicense** provides a complete license management solution for .NET applications, combining:
+**SimpleLicense** provides a simple but complete license management solution for .NET applications, combining:
 
 - 📝 **Flexible License Documents** - Dynamic field-based licenses that can store any data
 - 🏗️ **Schema-Driven Creation** - Define license structure once, generate many
@@ -20,7 +20,7 @@ A flexible, schema-driven .NET library and CLI tool for creating, signing, valid
 - 🖥️ **CLI Tool** - Command-line interface for license operations
 - 🎨 **Canonical Serialization** - Consistent JSON output for reliable signatures
 
-Perfect for commercial software, research tools, enterprise applications, or any scenario requiring license management.
+Perfect for small-medium commercial software, e.g. research-grade software tools and any scenarios requiring simple license management.
 
 ## Key Features
 
@@ -278,7 +278,7 @@ SimpleLicense/
 
 ## Use Cases
 
-### Commercial Software Licensing
+### Simple Commercial Software Licensing
 ```csharp
 // Create trial license (30 days)
 var license = new License();
@@ -294,32 +294,7 @@ var signer = new LicenseSigner(privateKey);
 var signedLicense = signer.SignLicenseDocument(license);
 ```
 
-### File Protection Licenses
-```csharp
-// Protect application and config files
-var schema = LicenseSchema.FromYaml(@"
-fields:
-  - name: AppHash
-    processor: HashFile
-  - name: ConfigHash
-    processor: HashFile
-");
-
-var license = creator.CreateLicense(schema, new Dictionary<string, object?>
-{
-    ["AppHash"] = "MyApp.exe",
-    ["ConfigHash"] = "config.xml"
-}, workingDirectory: "./release");
-
-// At runtime, verify files haven't been modified
-string currentAppHash = TextFileHasher.HashFile("MyApp.exe");
-if (currentAppHash != (string)license["AppHash"])
-{
-    throw new UnauthorizedAccessException("Application has been modified");
-}
-```
-
-### Research Software Licensing
+### Research Software Licensing with Restrictions on Model and Data Files
 ```csharp
 // License with dataset and model file protection
 var license = new License();
@@ -329,18 +304,6 @@ license["DatasetHash"] = TextFileHasher.HashFile("dataset.csv");
 license["ModelHash"] = TextFileHasher.HashFile("model.h5");
 license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
 license["AllowedPublications"] = 5;
-```
-
-### Enterprise Application Licensing
-```csharp
-// Multi-feature license with user limits
-var license = new License();
-license["CompanyId"] = "ACME-CORP-2026";
-license["MaxUsers"] = 500;
-license["MaxConcurrentSessions"] = 100;
-license["EnabledModules"] = new[] { "Analytics", "Reporting", "API" };
-license["SupportLevel"] = "Enterprise";
-license["ExpiryUtc"] = DateTime.UtcNow.AddYears(1);
 ```
 
 ## Advanced Features

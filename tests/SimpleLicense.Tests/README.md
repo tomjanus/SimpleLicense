@@ -1,6 +1,6 @@
 # SimpleLicense.Tests
 
-Comprehensive test suite for the SimpleLicense library, providing full coverage of license creation, signing, validation, serialization, and file protection features.
+A test suite for the `SimpleLicense` library, providing full coverage of license creation, signing, validation, serialization, and file protection features.
 
 ## Overview
 
@@ -103,9 +103,6 @@ Tests schema-level license validation (332 lines):
 
 #### [FieldValidatorsTests.cs](FieldValidatorsTests.cs)
 Tests field-level validators:
-- `NotExpiredValidator` - Ensures datetime fields haven't passed
-- `RegexValidator` - Pattern matching for string fields
-- `RangeValidator` - Numeric range validation
 - Custom validator implementations
 - Validator chaining and composition
 - Error message generation
@@ -123,8 +120,6 @@ Tests license serialization to/from JSON and YAML:
 
 #### [FieldSerializersTests.cs](FieldSerializersTests.cs)
 Tests custom field serialization:
-- `Base64Serializer` - Binary data encoding
-- `UppercaseSerializer` - String transformation
 - Custom serializer implementations
 - Serializer composition and chaining
 

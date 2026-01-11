@@ -1,6 +1,6 @@
 # SimpleLicense Examples
 
-This directory contains a comprehensive suite of examples demonstrating all features of the SimpleLicense library. Each example is self-contained and shows best practices for using the library in real-world scenarios.
+This directory contains a suite of examples demonstrating the features of the `SimpleLicense` library. Each example is self-contained and shows best practices for using the library in real-world scenarios.
 
 ## Quick Start
 
