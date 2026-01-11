@@ -4,6 +4,7 @@ A flexible, schema-driven .NET library and CLI tool for creating, signing, valid
 
 [![.NET 9.0](https://img.shields.io/badge/.NET-9.0-512BD4)](https://dotnet.microsoft.com/)
 [![C#](https://img.shields.io/badge/C%23-12.0-239120)](https://docs.microsoft.com/en-us/dotnet/csharp/)
+[![Build Status](https://github.com/tomjanus/SimpleLicense/actions/workflows/dotnet.yml/badge.svg)](https://github.com/tomjanus/SimpleLicense/actions/workflows/dotnet.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## Overview
