@@ -21,7 +21,7 @@ A **`LicenseDocument`** is the central data structure in `SimpleLicense`. It rep
 ### Creating a License
 
 ```csharp
-using SimpleLicense.LicenseValidation;
+using SimpleLicense.Core.LicenseValidation;
 
 // Create a new license
 var license = new LicenseDocument();

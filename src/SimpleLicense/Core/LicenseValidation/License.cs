@@ -15,9 +15,9 @@
 
 using System.Text;
 using System.Text.Json;
-using SimpleLicense.Utils;
+using SimpleLicense.Core.Utils;
 
-namespace SimpleLicense.LicenseValidation
+namespace SimpleLicense.Core.LicenseValidation
 {
 
     /// <summary>
@@ -97,18 +97,12 @@ namespace SimpleLicense.LicenseValidation
     }
 
     /// <summary>
-    /// Delegate type for field validators.
-    /// Takes a field value and returns a ValidationResult indicating success/failure.
-    /// </summary>
-    public delegate ValidationResult FieldValidator(object? value);
-
-    /// <summary>
     /// Represents a license document with mandatory and custom fields.
     /// Supports field-level validation using the FieldValidators registry.
     /// </summary>
-    public class LicenseDocument
+    public class License
     {
-        // --- Mandatory field names (every license must contain an Id, Expiry date and Signature) ---
+        // --- Mandatory field names (every license must contain an Id and Signature) ---
         private static readonly string[] MandatoryFieldNames = [ "LicenseId", "ExpiryUtc", "Signature" ];
 
         // --- Custom license fields ---
@@ -117,13 +111,13 @@ namespace SimpleLicense.LicenseValidation
         );
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LicenseDocument"/> class.
+        /// Initializes a new instance of the <see cref="License"/> class.
         /// Validators are automatically loaded from the FieldValidators registry.
         /// </summary>
         /// <param name="ensureMandatoryKeys">If true, ensures mandatory fields exist with null values if not set.</param> 
-        public LicenseDocument(bool ensureMandatoryKeys = true)
+        public License(bool ensureMandatoryKeys = true)
         {
-            // Validators are now managed by FieldValidators registry (auto-initialized on first access)
+            // Validators are managed by FieldValidators registry (auto-initialized on first access)
             if (ensureMandatoryKeys)
             {
                 foreach (var key in MandatoryFieldNames)
@@ -267,7 +261,7 @@ namespace SimpleLicense.LicenseValidation
         /// <param name="json">JSON string representation of the license</param>
         /// <returns>A new LicenseDocument instance</returns>
         /// <exception cref="LicenseValidationException">Thrown when deserialization or validation fails</exception>
-        public static LicenseDocument FromJson(string json)
+        public static License FromJson(string json)
         {
             Dictionary<string, JsonElement> parsed;
             try
@@ -280,7 +274,7 @@ namespace SimpleLicense.LicenseValidation
                 throw new InvalidOperationException("Failed to parse LicenseDocument JSON.", ex);
             }
             
-            var doc = new LicenseDocument(ensureMandatoryKeys: false);
+            var doc = new License(ensureMandatoryKeys: false);
             var errors = new List<string>();
 
             foreach (var kv in parsed)

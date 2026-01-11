@@ -4,13 +4,15 @@
 /// all the required fields necassary to define a valid license.
 /// </summary>
 
+using System.Collections;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 
-namespace SimpleLicense.LicenseValidation
+namespace SimpleLicense.Core.LicenseValidation
 {
     /// <summary>
     /// Describes a single field in a license schema, including
@@ -101,6 +103,19 @@ namespace SimpleLicense.LicenseValidation
         {
             Name = name;
             Fields = fields;
+        }
+
+        /// <summary>
+        /// Retrieves the field descriptor for the specified field name.
+        /// </summary>
+        /// <param name="fieldName">The name of the field to retrieve.</param>
+        /// <returns>
+        /// The <see cref="FieldDescriptor"/> for the specified field name,
+        /// or null if the field is not found in the schema.
+        /// </returns>
+        public FieldDescriptor? GetFieldDesciptor(string fieldName)
+        {
+            return Fields.FirstOrDefault(f => f.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase));
         }
 
         private static string DetectFormat(string path)
@@ -329,30 +344,137 @@ namespace SimpleLicense.LicenseValidation
             return errors;
         }
 
+        private static bool TryGetElements(object value, out IEnumerable<object?> elements)
+        {
+            elements = Array.Empty<object?>();
+            // Already an IEnumerable (but not string-as-text)
+            if (value is IEnumerable enumerable && value is not string)
+            {
+                elements = enumerable.Cast<object?>();
+                return true;
+            }
+            // String that might encode a list
+            if (value is string s)
+            {
+                s = s.Trim();
+                // JSON array
+                if (s.StartsWith("[") && s.EndsWith("]"))
+                {
+                    try
+                    {
+                        var json = JsonSerializer.Deserialize<List<object?>>(s);
+                        if (json != null)
+                        {
+                            elements = json;
+                            return true;
+                        }
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                }
+                // Optional: CSV fallback
+                if (s.Contains(','))
+                {
+                    elements = s.Split(',')
+                                .Select(x => x.Trim())
+                                .Cast<object?>();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool TryConvertDefault(
+            string type,
+            object value,
+            out object? result)
+        {
+            result = null;
+            type = type.ToLowerInvariant();
+
+            try
+            {
+                // ---- Try list parsing first ----
+                if (TryGetElements(value, out var elements))
+                {
+                    var list = new List<object?>();
+
+                    foreach (var item in elements)
+                    {
+                        if (!TryConvertScalar(type, item!, out var parsed))
+                            return false;
+
+                        list.Add(parsed);
+                    }
+
+                    result = list;
+                    return true;
+                }
+
+                // ---- Fallback: scalar ----
+                return TryConvertScalar(type, value, out result);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Converts a default value to the specified type.
         /// </summary>
         /// <param name="type">The target type as a string.</param>
         /// <param name="value">The value to convert.</param>
         /// <returns>The converted value.</returns>
-        /// <exception cref="NotSupportedException">
+        /// <exception cref="InvalidCastException">
+        /// Thrown when the specified type is not supported.
+        /// </exception>        
+        public static object? ConvertDefault(string type, object value)
+        {
+            if (!TryConvertDefault(type, value, out var result))
+                throw new InvalidCastException(
+                    $"Failed to convert value '{value}' to type '{type}'.");
+            return result!;
+        }
+
+        /// <summary>
+        /// Converts a default value to the specified type.
+        /// </summary>
+        /// <param name="type">The target type as a string.</param>
+        /// <param name="value">The value to convert.</param>
+        /// <returns>The converted value.</returns>
+        /// <exception cref="InvalidCastException">
         /// Thrown when the specified type is not supported.
         /// </exception>
-        private static object? ConvertDefault(string type, object value)
+        private static bool TryConvertScalar(
+            string type,
+            object value,
+            out object? result)
         {
-            type = type.ToLowerInvariant();
-
-            return type switch
+            result = null;
+            try
             {
-                "string" => Convert.ToString(value),
-                "int" => Convert.ToInt32(value),
-                "double" => Convert.ToDouble(value),
-                "decimal" => Convert.ToDecimal(value),
-                "bool" => Convert.ToBoolean(value),
-                "datetime" => DateTime.Parse(Convert.ToString(value)!),
-                _ when type.StartsWith("list<") => value,
-                _ => throw new NotSupportedException($"Unsupported type '{type}'.")
-            };
+                result = type switch
+                {
+                    "string"   => Convert.ToString(value),
+                    "int"      => Convert.ToInt32(value),
+                    "double"   => Convert.ToDouble(value),
+                    "decimal"  => Convert.ToDecimal(value),
+                    "bool"     => Convert.ToBoolean(value),
+                    "datetime" => DateTime.Parse(Convert.ToString(value)!),
+                    _ => throw new InvalidCastException()
+                };
+                return true;
+            }
+            catch (Exception ex) when (
+                ex is FormatException ||
+                ex is InvalidCastException ||
+                ex is OverflowException)
+            {
+                return false;
+            }
         }
 
     }

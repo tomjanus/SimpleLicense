@@ -32,9 +32,9 @@
 
 using System.Text;
 using System.Text.Json;
-using SimpleLicense.Utils;
+using SimpleLicense.Core.Utils;
 
-namespace SimpleLicense.LicenseValidation
+namespace SimpleLicense.Core.LicenseValidation
 {
     /// <summary>
     /// Validates a LicenseDocument against a LicenseSchema to ensure all
@@ -61,7 +61,7 @@ namespace SimpleLicense.LicenseValidation
         /// <param name="license">The license to validate</param>
         /// <param name="errors">Output list of validation errors (empty if valid)</param>
         /// <returns>True if the license conforms to the schema, false otherwise</returns>
-        public bool Validate(LicenseDocument license, out List<string> errors)
+        public bool Validate(License license, out List<string> errors)
         {
             ArgumentNullException.ThrowIfNull(license);
             errors = new List<string>();
@@ -97,7 +97,7 @@ namespace SimpleLicense.LicenseValidation
         /// </summary>
         /// <param name="license">The license to validate</param>
         /// <exception cref="LicenseValidationException">Thrown when validation fails</exception>
-        public void ValidateOrThrow(LicenseDocument license)
+        public void ValidateOrThrow(License license)
         {
             if (!Validate(license, out var errors))
             {
